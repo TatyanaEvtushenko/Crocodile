@@ -1,0 +1,59 @@
+﻿<Window x:Class="Crocodile.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Crocodile"
+        mc:Ignorable="d"
+        Title="Crocodile" Height="450" Width="725" Closed="Exit">
+    <Grid>
+        <Grid Name="GridMain" Visibility="Visible">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Canvas Name="CanvasPaint" Grid.Column="0" Background="White" MouseMove="SendPoint" MouseDown="BeginPaint" MouseUp="EndPaint"></Canvas>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <TextBlock Name="TextBlockStatus" Grid.Row="0" TextAlignment="Center">You guess!</TextBlock>
+                <TextBlock Name="TextBlockWord" Grid.Row="1" TextAlignment="Center"></TextBlock>
+                <TextBlock Name="TextBlockTime" Grid.Row="2" TextAlignment="Center"></TextBlock>
+                <TextBox Name="TextBoxMessages" Grid.Row="3" IsReadOnly="True" Margin="5 2" Background="Azure" TextWrapping="Wrap"></TextBox>
+                <TextBox Name="TextBoxEnter" Grid.Row="4" KeyDown="SendMessage" Margin="5 2" TextWrapping="Wrap"></TextBox>
+            </Grid>
+        </Grid>
+        <Grid Name="GridRegister" Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"></TextBlock>
+            <Grid Grid.Column="1" Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="5">Username:</TextBlock>
+                <TextBox Name="TextBoxUsername" Grid.Row="0" Grid.Column="1" TextChanged="ChangeParameters" Margin="0 5" Padding="2"></TextBox>
+                <Button Name="ButtonEnter" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" IsEnabled="False" Click="Enter" Padding="10">Enter</Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
