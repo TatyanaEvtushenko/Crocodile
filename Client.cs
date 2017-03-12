@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Net;
 using System.Text;
 using System.Windows;
 using ClassLibrary;
 
 namespace Crocodile
 {
-    class Client : TCPConnect
+    class Client : TCPConecter
     {
         public string Username { get; set; }
         private readonly MainWindow window;
@@ -42,7 +43,7 @@ namespace Crocodile
             SendStr(Commands.BeginPaint, x.ToString() + separator + y);
         }
 
-        protected override void GetReceiveData(Commands command, string str)
+        protected override void GetReceiveData(Commands command, string str, IPEndPoint remoteEndPoint)
         {
             switch (command)
             {

@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary
 {
-    public abstract class UDPConnect : BaseConnect
+    public abstract class UDPConecter : BaseConecter
     {
         private UdpClient connect;
 
-        protected UDPConnect()
+        protected UDPConecter()
         {
             connect = new UdpClient(GetFreePort());
             connect.JoinMulticastGroup(IPAddress.Parse(ConnectInfo.GroupAddr));
             Task.Factory.StartNew(Receive);
         }
 
-        ~UDPConnect()
+        ~UDPConecter()
         {
             try
             {
@@ -34,9 +34,8 @@ namespace ClassLibrary
         {
             while (true)
             {
-                IPEndPoint remoteEndPoint = null;
                 var data = connect.Receive(ref remoteEndPoint);
-                ReceiveStr(data);
+                ReceiveStr(data, remoteEndPoint);
             }
         }
 
@@ -47,6 +46,11 @@ namespace ClassLibrary
             {
                 connect.Send(data, data.Length, ConnectInfo.GroupAddr, usedPort);
             }
+        }
+
+        protected override void SendToRemote(byte[] data, IPEndPoint ipEndPoint)
+        {
+            connect.Send(data, data.Length, ipEndPoint);
         }
 
         protected override IEnumerable<int> GetUsedPorts()

@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace ClassLibrary
 {
-    //public interface IConnect
-    //{
-    //    void SendStr(Commands command, string str);
-    //    void GetReceiveData(Commands command, string str);
-    //}
-
-    public abstract class BaseConnect 
+    public abstract class BaseConecter
     {
+        protected IPEndPoint remoteEndPoint = null;
+
         protected int GetFreePort()
         {
             var usedPorts = GetUsedPorts();
@@ -24,7 +21,7 @@ namespace ClassLibrary
             return freePort;
         }
 
-        protected void ReceiveStr(byte[] data)
+        protected void ReceiveStr(byte[] data, IPEndPoint remoteEndPoint)
         {
             var command = (Commands)data[0];
             var tryData = new byte[data.Length - 1];
@@ -33,7 +30,7 @@ namespace ClassLibrary
             var length = str.IndexOf('\0');
             if (length >= 0)
                 str = str.Substring(0, length);
-            GetReceiveData(command, str);
+            GetReceiveData(command, str, remoteEndPoint);
         }
 
         protected void SendStr(Commands command, string str)
@@ -46,8 +43,9 @@ namespace ClassLibrary
         }
 
         protected abstract void Send(byte[] data);
+        protected abstract void SendToRemote(byte[] data, IPEndPoint remoteEndPoint);
         protected abstract void Receive();
-        protected abstract void GetReceiveData(Commands command, string str);
+        protected abstract void GetReceiveData(Commands command, string str, IPEndPoint remoteEndPoint);
         protected abstract IEnumerable<int> GetUsedPorts();
     }
 }

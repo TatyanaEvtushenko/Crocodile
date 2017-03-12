@@ -7,20 +7,38 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary
 {
-    public abstract class TCPConnect : BaseConnect
+    public abstract class TCPConecter : BaseConecter
     {
         private TcpListener listener;
 
-        protected TCPConnect()
+        protected TCPConecter()
         {
             listener = new TcpListener(IPAddress.Parse(ConnectInfo.ServerAddr), GetFreePort());
             listener.Start();
             Task.Factory.StartNew(Receive);
         }
 
-        ~TCPConnect()
+        ~TCPConecter()
         {
             listener?.Stop();
+        }
+
+        protected override void Receive()
+        {
+            byte[] data;
+            while (true)
+            {
+                using (var client = listener.AcceptTcpClient())
+                {
+                    using (var stream = client.GetStream())
+                    {
+                        data = new byte[client.ReceiveBufferSize];
+                        stream.Read(data, 0, client.ReceiveBufferSize);
+                        remoteEndPoint = (IPEndPoint)client.Client.LocalEndPoint;
+                    }
+                }
+                ReceiveStr(data, remoteEndPoint);
+            }
         }
 
         protected override void Send(byte[] data)
@@ -39,18 +57,14 @@ namespace ClassLibrary
             }
         }
 
-        protected override void Receive()
+        protected override void SendToRemote(byte[] data, IPEndPoint remoteEndPoint)
         {
-            while (true)
+            using (var client = new TcpClient())
             {
-                using (var client = listener.AcceptTcpClient())
+                client.Connect(remoteEndPoint);
+                using (var stream = client.GetStream())
                 {
-                    using (var stream = client.GetStream())
-                    {
-                        var data = new byte[client.ReceiveBufferSize];
-                        stream.Read(data, 0, client.ReceiveBufferSize);
-                        ReceiveStr(data);
-                    }
+                    stream.Write(data, 0, data.Length);
                 }
             }
         }
