@@ -15,7 +15,6 @@ namespace Crocodile
         private Purpose purpose;
         private Client client;
         private bool isPaint;
-        private Brush color = new SolidColorBrush(Colors.Black);
 
         public MainWindow()
         {
@@ -55,13 +54,13 @@ namespace Crocodile
             });
         }
 
-        public void PrintPoint(double x, double y)
+        public void PrintPoint(Point point)
         {
             Dispatcher.Invoke(() =>
             {
-                var line = new Line { X1 = LastPoint.X, Y1 = LastPoint.Y, X2 = x, Y2 = y, Stroke = color };
+                var line = new Line { X1 = LastPoint.X, Y1 = LastPoint.Y, X2 = point.X, Y2 = point.Y, Stroke = new SolidColorBrush(Colors.Black) };
                 CanvasPaint.Children.Add(line);
-                LastPoint = new Point(x, y);
+                LastPoint = point;
             });
         }
 
@@ -79,7 +78,7 @@ namespace Crocodile
             if (isPaint)
             {
                 var point = e.GetPosition((Canvas)sender);
-                client.SendPoint(point.X, point.Y);
+                client.SendPoint(point);
             }
         }
 
@@ -87,7 +86,7 @@ namespace Crocodile
         {
             isPaint = true;
             var point = e.GetPosition((Canvas)sender);
-            client.SendBeginPaint(point.X, point.Y);
+            client.SendBeginPaint(point);
         }
 
         private void EndPaint(object sender, MouseButtonEventArgs e)

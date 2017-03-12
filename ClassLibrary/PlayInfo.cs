@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary
 {
-    interface IConverter<T>
+    public class PlayInfo
     {
-        byte[] ConvertToBytes(T data);
-        T ConvertToObject(byte[] data);
+        public int CountOfUsers { get; set; }
+        public bool IsPlaing { get; set; }
     }
 }

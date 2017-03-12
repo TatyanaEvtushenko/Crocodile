@@ -13,7 +13,7 @@ namespace ClassLibrary
 
         protected TCPConecter()
         {
-            listener = new TcpListener(IPAddress.Parse(ConnectInfo.ServerAddr), GetFreePort());
+            listener = new TcpListener(IPAddress.Parse(ConectInfo.ServerAddr), GetFreePort());
             listener.Start();
             Task.Factory.StartNew(Receive);
         }
@@ -37,7 +37,8 @@ namespace ClassLibrary
                         remoteEndPoint = (IPEndPoint)client.Client.LocalEndPoint;
                     }
                 }
-                ReceiveStr(data, remoteEndPoint);
+                var package = new Converter<PackageForSending>().ConvertToObject(data);
+                GetReceiveData(package);
             }
         }
 
@@ -48,7 +49,7 @@ namespace ClassLibrary
             {
                 using (var client = new TcpClient())
                 {
-                    client.Connect(ConnectInfo.ServerAddr, port);
+                    client.Connect(ConectInfo.ServerAddr, port);
                     using (var stream = client.GetStream())
                     {
                         stream.Write(data, 0, data.Length);
@@ -71,7 +72,7 @@ namespace ClassLibrary
 
         protected override IEnumerable<int> GetUsedPorts()
         {
-            var portsForChecking = Enumerable.Range(ConnectInfo.StartPort, ConnectInfo.MaxPortCount);
+            var portsForChecking = Enumerable.Range(ConectInfo.StartPort, ConectInfo.MaxPortCount);
             var usedPorts = from port in portsForChecking
                             join usedPort in IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners() on port equals
                                 usedPort.Port

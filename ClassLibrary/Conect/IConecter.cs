@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary
 {
-    interface IConnecter
+    interface IConnecter<T>
     {
-        void Send(byte[] data);
-        void SendToRemote(byte[] data, IPEndPoint remoteEndPoint);
-        void GetReceiveData(Commands command, string str, IPEndPoint remoteEndPoint);
+        //void Send(PackageForSending data);
+        //void SendToRemote(byte[] data, IPEndPoint remoteEndPoint);
+        //void GetReceiveData(Commands command, string str, IPEndPoint remoteEndPoint);
     }
 }

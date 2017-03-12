@@ -14,7 +14,7 @@ namespace ClassLibrary
         protected UDPConecter()
         {
             connect = new UdpClient(GetFreePort());
-            connect.JoinMulticastGroup(IPAddress.Parse(ConnectInfo.GroupAddr));
+            connect.JoinMulticastGroup(IPAddress.Parse(ConectInfo.GroupAddr));
             Task.Factory.StartNew(Receive);
         }
 
@@ -22,7 +22,7 @@ namespace ClassLibrary
         {
             try
             {
-                connect?.DropMulticastGroup(IPAddress.Parse(ConnectInfo.GroupAddr));
+                connect?.DropMulticastGroup(IPAddress.Parse(ConectInfo.GroupAddr));
             }
             finally
             {
@@ -35,7 +35,8 @@ namespace ClassLibrary
             while (true)
             {
                 var data = connect.Receive(ref remoteEndPoint);
-                ReceiveStr(data, remoteEndPoint);
+                var package = new Converter<PackageForSending>().ConvertToObject(data);
+                GetReceiveData(package);
             }
         }
 
@@ -44,7 +45,7 @@ namespace ClassLibrary
             var usedPorts = GetUsedPorts();
             foreach (var usedPort in usedPorts)
             {
-                connect.Send(data, data.Length, ConnectInfo.GroupAddr, usedPort);
+                connect.Send(data, data.Length, ConectInfo.GroupAddr, usedPort);
             }
         }
 
@@ -55,7 +56,7 @@ namespace ClassLibrary
 
         protected override IEnumerable<int> GetUsedPorts()
         {
-            var portsForChecking = Enumerable.Range(ConnectInfo.StartPort, ConnectInfo.MaxPortCount);
+            var portsForChecking = Enumerable.Range(ConectInfo.StartPort, ConectInfo.MaxPortCount);
             var usedPorts = from port in portsForChecking
                             join usedPort in IPGlobalProperties.GetIPGlobalProperties().GetActiveUdpListeners() on port equals
                                 usedPort.Port

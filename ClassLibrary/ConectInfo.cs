@@ -1,6 +1,6 @@
 ﻿namespace ClassLibrary
 {
-    public static class ConnectInfo
+    public static class ConectInfo
     {
         public static string ServerAddr { get; } = "127.0.0.1";
         public static string GroupAddr { get; } = "235.5.5.1";

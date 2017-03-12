@@ -10,7 +10,6 @@ namespace Crocodile
     {
         public string Username { get; set; }
         private readonly MainWindow window;
-        private readonly char separator = ' ';
 
         public Client(MainWindow wind, string username)
         {
@@ -20,51 +19,54 @@ namespace Crocodile
 
         public void SendEnter()
         {
-            SendStr(Commands.Enter, Username + " has joined");
+            var data = preparer.GetStrDataForSending(Commands.Enter, Username + " has joined");
+            Send(data);
         }
 
         public void SendLogOff()
         {
-            SendStr(Commands.Exit, Username + " has left a game");
+            var data = preparer.GetStrDataForSending(Commands.Exit, Username + " has left a game");
+            Send(data);
         }
 
         public void SendMessage(string message)
         {
-            SendStr(Commands.Message, Username + ": " + message);
+            var data = preparer.GetStrDataForSending(Commands.Message, Username + ": " + message);
+            Send(data);
         }
 
-        public void SendPoint(double x, double y)
+        public void SendPoint(Point point)
         {
-            SendStr(Commands.Point, x.ToString() + separator + y);
+            var data = preparer.GetPointDataForSending(Commands.Point, point);
+            Send(data);
         }
 
-        public void SendBeginPaint(double x, double y)
+        public void SendBeginPaint(Point point)
         {
-            SendStr(Commands.BeginPaint, x.ToString() + separator + y);
+            var data = preparer.GetPointDataForSending(Commands.BeginPaint, point);
+            Send(data);
         }
 
-        protected override void GetReceiveData(Commands command, string str, IPEndPoint remoteEndPoint)
+        protected override void GetReceiveData(PackageForSending package)
         {
-            switch (command)
+            switch (package.Command)
             {
                 case Commands.Enter:
                 case Commands.Exit:
-                    window.PrintStr("\t" + str);
-                    break;
                 case Commands.Message:
-                    window.PrintStr(DateTime.Now.ToShortTimeString() + ", " + str);
+                    var str = new Converter<string>().ConvertToObject(package.Data);
+                    if (package.Command == Commands.Message)
+                        window.PrintStr(DateTime.Now.ToShortTimeString() + ", " + str);
+                    else
+                        window.PrintStr("   " + str);
                     break;
                 case Commands.Point:
                 case Commands.BeginPaint:
-                    var indexSeparator = str.IndexOf(separator);
-                    var x = Convert.ToDouble(str.Substring(0, indexSeparator));
-                    var y = Convert.ToDouble(str.Substring(indexSeparator + 1, str.Length - indexSeparator - 1));
-                    if (command == Commands.Point)
-                        window.PrintPoint(x, y);
+                    var point = new Converter<Point>().ConvertToObject(package.Data);
+                    if (package.Command == Commands.Point)
+                        window.PrintPoint(point);
                     else
-                    {
-                        window.LastPoint = new Point(x, y);
-                    }
+                        window.LastPoint = point;
                     break;
             }
         }
